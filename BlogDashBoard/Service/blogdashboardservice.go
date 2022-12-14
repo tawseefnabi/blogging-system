@@ -2,8 +2,10 @@ package blogdashboardservice
 
 import (
 	model "blogging/BlogDashBoard/Model"
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -35,6 +37,7 @@ func NewDashBoardService() *DashBoardService {
 }
 
 func (dbs *DashBoardService) WriteBlog(blog model.Blog) error {
+	fmt.Print("Writing Blog")
 	fmt.Printf("%+v\n", blog)
 	requestBody := RequestBody{
 		RequestType: "create",
@@ -47,4 +50,37 @@ func (dbs *DashBoardService) WriteBlog(blog model.Blog) error {
 
 	}
 	return dbs.PushCommentToQueue(topic, data)
+}
+
+func (dbs *DashBoardService) ReadBlog(name string) (interface{}, error) {
+	fmt.Println("Reading Blog", name)
+	searchBody := map[string]interface{}{
+		"query": map[string]interface{}{
+			"term": map[string]interface{}{
+				"title": name,
+			},
+		},
+	}
+	var buf bytes.Buffer
+	err := json.NewEncoder(&buf).Encode(searchBody)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, "http://localhost:9200/blog/_doc/_search", &buf)
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := dbs.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var esData interface{}
+	err = json.Unmarshal(bytes, &esData)
+	if err != nil {
+		return nil, err
+	}
+	return esData, nil
+
 }

@@ -28,6 +28,7 @@ func init() {
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/write_blog", DashboardControler.WriteBlog).Methods("POST")
+	router.HandleFunc("/api/read_blog", DashboardControler.ReadBlog).Methods("GET")
 	srv := &http.Server{
 		Addr:    "localhost:8080",
 		Handler: router,
