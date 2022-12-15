@@ -11,6 +11,9 @@ type RequestBody struct {
 	Body        interface{} `json:"body"`
 	CallBackUrl string      `json:"callback"`
 }
+type DeleteBody struct {
+	Name string `json:"name"`
+}
 
 func ConnectProducer(brokersUrl []string) (sarama.SyncProducer, error) {
 	fmt.Print("kafka ConnectProducer")

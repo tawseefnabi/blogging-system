@@ -61,3 +61,20 @@ func (dbc *DashboardControler) ReadBlog(w http.ResponseWriter, r *http.Request) 
 		"body":    body,
 	})
 }
+
+func (dbc *DashboardControler) DeleteBlog(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("title")
+	err := dbc.DashBoardService.DeleteBlog(name)
+	w.Header().Add("Content-Type", "application/json")
+	if err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  500,
+			"message": err.Error(),
+		})
+		return
+	}
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  200,
+		"message": "data deleted successfully",
+	})
+}

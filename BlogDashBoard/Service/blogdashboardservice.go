@@ -84,3 +84,19 @@ func (dbs *DashBoardService) ReadBlog(name string) (interface{}, error) {
 	return esData, nil
 
 }
+
+func (dbs *DashBoardService) DeleteBlog(name string) error {
+	fmt.Println(name)
+	requestBody := RequestBody{
+		RequestType: "delete",
+		Body: DeleteBody{
+			Name: name,
+		},
+		CallBackUrl: "http://localhost:9200",
+	}
+	data, err := json.Marshal(requestBody)
+	if err != nil {
+		return err
+	}
+	return dbs.PushCommentToQueue(topic, data)
+}

@@ -3,6 +3,7 @@ package main
 import (
 	blogdashboardcontroller "blogging/BlogDashBoard/Controller"
 	blogdashboardservice "blogging/BlogDashBoard/Service"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -29,6 +30,10 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/write_blog", DashboardControler.WriteBlog).Methods("POST")
 	router.HandleFunc("/api/read_blog", DashboardControler.ReadBlog).Methods("GET")
+	router.HandleFunc("/api/delete_blog", DashboardControler.DeleteBlog).Methods("DELETE")
+	router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
+	}).Methods("GET")
 	srv := &http.Server{
 		Addr:    "localhost:8080",
 		Handler: router,
